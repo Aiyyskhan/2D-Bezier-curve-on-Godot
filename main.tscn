@@ -1,0 +1,75 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://point.tscn" type="PackedScene" id=1]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+onready var p0: Node = $point_0
+onready var p1: Node = $point_1
+onready var p2: Node = $point_2
+onready var p3: Node = $point_3
+onready var target: Node = $target
+onready var slider: HSlider = $HSlider
+onready var coord_lbl: Label = $Coord
+
+var bezier = load(\"Bezier.gd\").new()
+
+func _process(_delta):
+	var slider_val = slider.value
+	
+	target.position = bezier.getPoint(p0.position, p1.position, p2.position, p3.position, slider_val)
+	target.rotation = bezier.getFDeriv(p0.position, p1.position, p2.position, p3.position, slider_val).angle()
+	
+	coord_lbl.rect_position = target.position + Vector2(15.0, -15.0)
+	coord_lbl.text = \"({0},{1})\".format([\"%0.0f\" % target.position.x, \"%0.0f\" % target.position.y])
+	coord_lbl.show()
+"
+
+[sub_resource type="QuadMesh" id=3]
+
+[sub_resource type="DynamicFont" id=5]
+font_data = ExtResource( 2 )
+
+[node name="main" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="HSlider" type="HSlider" parent="."]
+margin_left = -88.0
+margin_top = 207.0
+margin_right = 88.0
+margin_bottom = 229.0
+max_value = 1.0
+step = 0.01
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+
+[node name="target" type="MeshInstance2D" parent="."]
+modulate = Color( 0.270588, 0.839216, 0.160784, 1 )
+scale = Vector2( 13, 13 )
+mesh = SubResource( 3 )
+
+[node name="point_1" parent="." instance=ExtResource( 1 )]
+position = Vector2( -143, -64 )
+
+[node name="point_2" parent="." instance=ExtResource( 1 )]
+position = Vector2( 128, 90 )
+
+[node name="point_0" parent="." instance=ExtResource( 1 )]
+position = Vector2( -128, 67 )
+
+[node name="point_3" parent="." instance=ExtResource( 1 )]
+position = Vector2( 130, -61 )
+
+[node name="Coord" type="Label" parent="."]
+margin_left = 19.5
+margin_top = -6.5
+margin_right = 65.5
+margin_bottom = 13.5
+custom_colors/font_color = Color( 0.270588, 0.839216, 0.160784, 1 )
+custom_fonts/font = SubResource( 5 )
+text = "(0, 0)"
+align = 1
+valign = 1

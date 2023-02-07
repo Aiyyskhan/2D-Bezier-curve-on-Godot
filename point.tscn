@@ -1,0 +1,44 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+
+[sub_resource type="SphereMesh" id=4]
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends MeshInstance2D
+
+onready var target = position
+	
+func _physics_process(_delta):
+	if Input.is_action_pressed(\"click\"):
+		target = get_global_mouse_position()
+		
+		if position.distance_to(target) < 10:
+			position = target
+	
+	$Coord.text = str(self.position)
+	$Coord.show()
+"
+
+[sub_resource type="DynamicFont" id=5]
+size = 18
+font_data = ExtResource( 1 )
+
+[node name="point" type="MeshInstance2D"]
+modulate = Color( 0.890196, 0.913725, 0.12549, 1 )
+show_behind_parent = true
+scale = Vector2( 10, 10 )
+mesh = SubResource( 4 )
+script = SubResource( 3 )
+
+[node name="Coord" type="Label" parent="."]
+margin_left = -2.4
+margin_top = 2.1
+margin_right = 58.6
+margin_bottom = 24.1
+rect_scale = Vector2( 0.08, 0.08 )
+size_flags_horizontal = 3
+custom_fonts/font = SubResource( 5 )
+text = "(0, 0)"
+align = 1
+valign = 1
